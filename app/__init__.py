@@ -1,13 +1,11 @@
 """A simple flask web app"""
 import flask_login
 import os
-import datetime
 import time
 
-from flask import g, request
-from rfc3339 import rfc3339
+from flask import g
 
-from flask import render_template, Flask, has_request_context, request
+from flask import render_template, Flask, request
 from flask_bootstrap import Bootstrap5
 from flask_wtf.csrf import CSRFProtect
 
@@ -18,7 +16,8 @@ from app.context_processors import utility_text_processors
 from app.db import db
 from app.db.models import User
 from app.exceptions import http_exceptions
-from app.log_formatters import RequestFormatter
+from app.logging_config.log_formatters import RequestFormatter
+from app.logging_config import log_con
 from app.simple_pages import simple_pages
 import logging
 from flask.logging import default_handler
@@ -50,49 +49,7 @@ def create_app():
     db.init_app(app)
     # add command function to cli commands
     app.cli.add_command(create_database)
-
-    # Deactivate the default flask logger so that log messages don't get duplicated
-    app.logger.removeHandler(default_handler)
-
-    # get root directory of project
-    root = os.path.dirname(os.path.abspath(__file__))
-    # set the name of the apps log folder to logs
-    logdir = os.path.join(root, 'logs')
-    # make a directory if it doesn't exist
-    if not os.path.exists(logdir):
-        os.mkdir(logdir)
-    # set name of the log file
-    log_file = os.path.join(logdir, 'info.log')
-
-    handler = logging.FileHandler(log_file)
-    # Create a log file formatter object to create the entry in the log
-    formatter = RequestFormatter(
-        '[%(asctime)s] %(remote_addr)s requested %(url)s\n'
-        '%(levelname)s in %(module)s: %(message)s'
-    )
-    # set the formatter for the log entry
-    handler.setFormatter(formatter)
-    # Set the logging level of the file handler object so that it logs INFO and up
-    handler.setLevel(logging.INFO)
-    # Add the handler for the log entry
-    app.logger.addHandler(handler)
-
-    @app.before_request
-    def start_timer():
-        g.start = time.time()
-
-    @app.after_request
-    def log_request(response):
-        if request.path == '/favicon.ico':
-            return response
-        elif request.path.startswith('/static'):
-            return response
-        elif request.path.startswith('/bootstrap'):
-            return response
-
-        log = logging.getLogger("myApp")
-        log.info("My App Logger")
-        return response
+    app.register_blueprint(log_con)
 
     return app
 
