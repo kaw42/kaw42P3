@@ -4,8 +4,7 @@
 * [Production Deployment](https://kwilliam-prod.herokuapp.com/)
 
 
-[![Development Workflow 3.8](https://github.com/kaw42/kaw42P3/actions/workflows/dev.yml/badge.svg)](https://github.com/kaw42/kaw42P3/actions/workflows/dev.yml)
-* [Developmental Deployment](https://kwilliam-dev.herokuapp.com/)
+[![Development Workflow 3.8](https://github.com/kaw42/kaw42P3/actions/workflows/dev.yml/badge.svg)](https://github.com/kaw42/kaw42P3/actions/workflows/dev.yml)* [Developmental Deployment](https://kwilliam-dev.herokuapp.com/)
 
 ## Setting up CI/CD
 
