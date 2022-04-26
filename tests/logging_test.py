@@ -1,5 +1,3 @@
-import logging
-from logging import config
 from pathlib import Path
 import os
 
