@@ -23,7 +23,8 @@ import logging
 from flask.logging import default_handler
 
 login_manager = flask_login.LoginManager()
-
+log=logging.getLogger('myApp')
+log.info("something to print")
 
 def page_not_found(e):
     return render_template("404.html"), 404
