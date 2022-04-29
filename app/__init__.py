@@ -7,7 +7,7 @@ from flask import Flask
 from flask_bootstrap import Bootstrap5
 from flask_cors import CORS
 from flask_mail import Mail
-# from flask_wtf.csrf import CSRFProtect
+from flask_wtf.csrf import CSRFProtect
 
 from app.auth import auth
 from app.cli import create_database
