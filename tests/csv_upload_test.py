@@ -1,29 +1,26 @@
+import logging
 import os
 
-from app import db
-from app.auth.forms import *
-from app.db.models import User, Song
+def upload_song_csv_test (client, application):
+    application.app_context()
+    application.secret_key = "this is a testing secret key"
+    application.config['WTF_CSRF_ENABLED'] = False
+    response = client.post('/login', data=dict(email="kaw42@njit.edu", password="abc123"),
+                                follow_redirects=True)
+    assert response.status_code == 200
 
-from flask_login import FlaskLoginClient
+    songs = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "music.csv"))
+    csv_data = open(songs, "rb")
+    data = {"file": (csv_data, "music.csv")}
+    response = client.post('/songs/upload', data=data, follow_redirects=True, buffered=True,
+                                content_type='multipart/form-data')
+    assert response.status_code == 200
+    response = client.get("/songs")
+    assert response.status_code == 200
+
+    assert os.path.exists(
+        os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'uploads', 'music.csv'))) == True
+    response = client.get('/logout', follow_redirects=True)
+    assert response.status_code == 200
 
 
-def test_csv_upload_and_verification(application, client, add_user):
-    application.test_client_class = FlaskLoginClient
-    user = User.query.get(1)
-
-    assert db.session.query(User).count() == 1
-    assert user.email == 'keith@webizly.com'
-
-    with application.test_client(user=user) as client:
-        # This request already has a user logged in.
-        response = client.get('/songs/upload')
-        assert response.status_code == 200
-
-        # Checking to see that the form validates with music_csv.
-        root = os.path.dirname(os.path.abspath(__file__))
-        music_csv = os.path.join(root, '../sample_csv/music.csv')
-
-        form = csv_upload()
-        form.file = music_csv
-        assert form.validate()
-        assert db.session.query(Song).count() == 0
