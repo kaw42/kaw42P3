@@ -20,18 +20,19 @@ class Config(object):
     MAIL_USE_TLS = True
     MAIL_USE_SSL = False
     MAIL_DEFAULT_SENDER = os.getenv('MAIL_DEFAULT_SENDER','noreply@myapp.com')
-
+    WTF_CSRF_ENABLED=True
 
 class ProductionConfig(Config):
     pass
 
-
 class DevelopmentConfig(Config):
     DEBUG = True
     SESSION_COOKIE_SECURE = False
+    WTF_CSRF_ENABLED = False
 
 class TestingConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
     SESSION_COOKIE_SECURE = False
     DEBUG = True
+    WTF_CSRF_ENABLED = False
