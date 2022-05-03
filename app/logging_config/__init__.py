@@ -24,6 +24,7 @@ def after_request_logging(response):
         return response
     elif request.path.startswith('/bootstrap'):
         return response
+
     return response
 
 @log_con.before_app_first_request
@@ -36,6 +37,15 @@ def setup_logs():
         os.mkdir(logdir)
     logging.config.dictConfig(LOGGING_CONFIG)
 
+    log = logging.getLogger("myApp")
+    log.info("My App Logger")
+
+    current_app.logger.info("myerrors logger is activated")
+    log = logging.getLogger("myerrors")
+    log.error("This broke")
+
+    log = logging.getLogger("debug")
+    log.debug("Debug Logger")
 
 
 LOGGING_CONFIG = {
@@ -96,6 +106,28 @@ LOGGING_CONFIG = {
             'maxBytes': 10000000,
             'backupCount': 5,
         },
+        'file.handler.debug': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'formatter': 'standard',
+            'filename': os.path.join(config.Config.LOG_DIR,'debug.log'),
+            'maxBytes': 10000000,
+            'backupCount': 5,
+        },
+        'file.handler.flask': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'formatter': 'standard',
+            'filename': os.path.join(config.Config.LOG_DIR,'flask.log'),
+            'maxBytes': 10000000,
+            'backupCount': 5,
+        },
+        'file.handler.uploadcsv': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'formatter': 'standard',
+            'filename': os.path.join(config.Config.LOG_DIR, 'uploadcsv.log'),
+            'maxBytes': 10000000,
+            'backupCount': 5,
+        },
+
     },
     'loggers': {
         '': {  # root logger
@@ -125,6 +157,26 @@ LOGGING_CONFIG = {
         },
         'myerrors': {  # if __name__ == '__main__'
             'handlers': ['file.handler.errors'],
+            'level': 'DEBUG',
+            'propagate': False
+        },
+        'request': {  # if __name__ == '__main__'
+            'handlers': ['file.handler.request'],
+            'level': 'DEBUG',
+            'propagate': False
+        },
+        'debug': {  # if __name__ == '__main__'
+            'handlers': ['file.handler.debug'],
+            'level': 'DEBUG',
+            'propagate': False
+        },
+        'flask': {  # if __name__ == '__main__'
+            'handlers': ['file.handler.flask'],
+            'level': 'DEBUG',
+            'propagate': False
+        },
+        'uploadcsv': {  # if __name__ == '__main__'
+            'handlers': ['file.handler.uploadcsv'],
             'level': 'DEBUG',
             'propagate': False
         },
